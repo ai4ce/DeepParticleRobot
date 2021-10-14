@@ -7,38 +7,3 @@ Particle  robots  are  novel  biologically-inspiredrobotic systems where locomot
 
 ## [Code (GitHub)](https://github.com/ai4ce/DeepParticleRobot/) & Dependencies
 The environment scripts can be found in [Env](https://github.com/ai4ce/DeepParticleRobot/tree/main/Env) folder. The environment is developed based on the [OpenAi Gym](https://gym.openai.com/). All baseline scripts are in [script](https://github.com/ai4ce/DeepParticleRobot/tree/main/script) folder. You need to install the [Pytorch](https://pytorch.org/) to run all baseline scripts. We use [Stable baselines3](https://github.com/DLR-RM/stable-baselines3) for A2C, PPO, and DQN algorithms. 
-## How to use
-
-Our environment is developed based on the [OpenAi Gym](https://gym.openai.com/). You can simply follow the similar way to use our environment. Here we present an example for using 1D static task environment.
-```
-from DMP_Env_1D_static import deep_mobile_printing_1d1r ### you may need to find the path to this environment in [Env] folder 
-env = deep_mobile_printing_1d1r(plan_choose=2) ### plan_choose could be 0: sin, 1: Gaussian, and 2: Step curve  
-observation = env.reset()
-fig = plt.figure(figsize=(5, 5))
-ax = fig.add_subplot(1, 1, 1)
-ax.clear()
-for _ in range(1000):
-  action = np.random.randint(env.action_dim) # your agent here (this takes random actions)
-  observation, reward, done = env.step(action)
-  env.render(ax)
-  plt.pause(0.1)
-  if done:
-    break
-plt.show()
-```
-
-## [Paper (arXiv)](https://arxiv.org/abs/2103.16732)
-To cite our paper:
-```
-@misc{han2021simultaneous,
-      title={Simultaneous Navigation and Construction Benchmarking Environments}, 
-      author={Wenyu Han and Chen Feng and Haoran Wu and Alexander Gao and Armand Jordana and Dong Liu and Lerrel Pinto and Ludovic Righetti},
-      year={2021},
-      eprint={2103.16732},
-      archivePrefix={arXiv},
-      primaryClass={cs.RO}
-}
-```
-
-## Acknowledgment
- The research is supported by NSF CPS program under CMMI-1932187. The authors gratefully thank our human test participants and the helpful comments from [**Bolei Zhou**](http://bzhou.ie.cuhk.edu.hk/), [**Zhen Liu**](http://itszhen.com/), and the anonymous reviewers, and also [**Congcong Wen**](https://scholar.google.com/citations?hl=en&user=OTBgvCYAAAAJ) for paper revision.
