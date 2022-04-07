@@ -2,7 +2,7 @@
 
 [**Jeremy Shen**](https://github.com/jshen04), [**Erdong Xiao**](https://github.com/ErdongXiao), [**Yuchen Liu**](https://github.com/Rtlyc), [**Chen Feng**](https://engineering.nyu.edu/faculty/chen-feng)
 
-![Overview](https://raw.githubusercontent.com/ai4ce/SNAC/main/docs/figs/overview.PNG?token=ANKETMQES4EKYCQYAE4K4WLAN4WB4)
+![Overview](https://raw.githubusercontent.com/ai4ce/DeepParticleRobot/main/docs/figs/environment_overview.jpg)
 
 |[Abstract](#abstract)|[Code](#code-github)|[Paper](#paper-arxiv)|[Results](#results)|[Acknowledgment](#acknowledgment)|
 
@@ -69,10 +69,10 @@ To cite our paper:
 ![table](https://raw.githubusercontent.com/ai4ce/SNAC/main/docs/figs/comparison_table.PNG?token=ANKETMXBFQCPNT5CBK5GVKDAN4YP4)
 
 ## Results
-**Benchmark results for all baselines, including human baseline: average IoU(left) and minimum IoU(right). Human data of 3D environment is not collected, because it is time-consuming for human to play one game.**
-![Baseline_curve](https://raw.githubusercontent.com/ai4ce/SNAC/main/docs/figs/result_curve.PNG?token=ANKETMSFKVHG2SIV2JIVMLTAN4WEW)
+**Benchmark results for all four tasks (simple navigation, obstacle navigation, navigation with unresponsive particle robots, and object manipulation). The average, minimum, and maximum displacement is plotted for handcrafted, DQN, A2C, and PPO control.**
+![Baseline_plots](https://raw.githubusercontent.com/ai4ce/DeepParticleRobot/main/docs/figs/net_displacement_results.png)
 
-**The best testing visualized results of baselines on all tasks.**
+**Sample visualized trials of baselines on simple navigation task.**
 ![Baseline_visualize](https://raw.githubusercontent.com/ai4ce/SNAC/main/docs/figs/results_fig.PNG?token=ANKETMRREVGARACAVL44QJLAN4WFW)
 
 ## Acknowledgment
