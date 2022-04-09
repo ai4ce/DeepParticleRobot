@@ -84,8 +84,9 @@ To cite our paper:
 ```
 
 ### Task environment setups  
-TODO - Need to add 4 gifs of wave policy for each task
-
+| Simple Navigation | Obstacle Navigation | Unresponsive Particles | Object Manipulation |
+|---|---|---|---|
+| [Simple_Navigation](https://github.com/ai4ce/DeepParticleRobot/blob/d0467391bdf64e7301c84ae8e57f38f5037d9d0d/docs/figs/sample%20tasks/handcrafted_simple.gif) | [Obstacle_Navigation](https://github.com/ai4ce/DeepParticleRobot/blob/d0467391bdf64e7301c84ae8e57f38f5037d9d0d/docs/figs/sample%20tasks/handcrafted_obstacle.gif) | [Unresponsive_Particles](https://github.com/ai4ce/DeepParticleRobot/blob/d0467391bdf64e7301c84ae8e57f38f5037d9d0d/docs/figs/sample%20tasks/handcrafted_unresponsive.gif) | [Object_Manipulation](https://github.com/ai4ce/DeepParticleRobot/blob/d0467391bdf64e7301c84ae8e57f38f5037d9d0d/docs/figs/sample%20tasks/handcrafted_object.gif) |
 ## Comparison 
 **There are many reinforcement learning environments out there, but only ours is directly suitable for simulating particle robots.**
 ![table](https://raw.githubusercontent.com/ai4ce/DeepParticleRobot/main/docs/figs/related_works.png)
@@ -96,7 +97,10 @@ TODO - Need to add 4 gifs of wave policy for each task
 ![Baseline_plots](https://raw.githubusercontent.com/ai4ce/DeepParticleRobot/main/docs/figs/net_displacement_results.png)
 
 **Sample visualized trials of baselines on simple navigation task.**
-TODO - Need to add 4 gifs for each policy on simple navigation
+
+| Handcrafted | PPO | A2C | DQN |
+|---|---|---|---|
+| [Handcrafted](https://github.com/ai4ce/DeepParticleRobot/blob/d0467391bdf64e7301c84ae8e57f38f5037d9d0d/docs/figs/baseline%20gifs/handcrafted_baseline.gif) | [PPO](https://github.com/ai4ce/DeepParticleRobot/blob/d0467391bdf64e7301c84ae8e57f38f5037d9d0d/docs/figs/baseline%20gifs/ppo_baseline.gif) | [A2C](https://github.com/ai4ce/DeepParticleRobot/blob/d0467391bdf64e7301c84ae8e57f38f5037d9d0d/docs/figs/baseline%20gifs/a2c_baseline.gif) | [DQN](https://github.com/ai4ce/DeepParticleRobot/blob/d0467391bdf64e7301c84ae8e57f38f5037d9d0d/docs/figs/baseline%20gifs/dqn_baseline.gif) |
 
 ## Acknowledgment
 This research is supported by the NSF CPS program under CMMI-1932187.
