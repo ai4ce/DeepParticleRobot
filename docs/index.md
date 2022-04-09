@@ -28,22 +28,44 @@ and Object Manipulation (arXiv)".
 ``` 
 ## How to use
 
-Our environment is developed based on the [OpenAi Gym](https://gym.openai.com/). You can simply follow the similar way to use our environment. Here we present an example for using 1D static task environment.
+Our environment is developed with [OpenAi Gym](https://gym.openai.com/). Here is a sample simple navigation episode with random actions.
 ```
-from DMP_Env_1D_static import deep_mobile_printing_1d1r ### you may need to find the path to this environment in [Env] folder 
-env = deep_mobile_printing_1d1r(plan_choose=2) ### plan_choose could be 0: sin, 1: Gaussian, and 2: Step curve  
-observation = env.reset()
-fig = plt.figure(figsize=(5, 5))
-ax = fig.add_subplot(1, 1, 1)
-ax.clear()
-for _ in range(1000):
-  action = np.random.randint(env.action_dim) # your agent here (this takes random actions)
-  observation, reward, done = env.step(action)
-  env.render(ax)
-  plt.pause(0.1)
-  if done:
-    break
-plt.show()
+import math
+import gym
+
+from gym_dpr.envs.viz import Visualizer
+from gym_dpr.envs.DPR_ParticleRobot import CircularBot
+from gym_dpr.envs.DPR_SuperAgent import SuperCircularBot
+from gym_dpr.envs.DPR_World import World
+
+env = gym.make('dpr_single-v0',
+               numBots=9, worldClass=World, botClass=CircularBot, superBotClass=SuperCircularBot,
+               discreteActionSpace=False, continuousAction=False,
+               goalFrame=True,
+               rewardFunc="piecewise",
+               randomSeed=0,
+               fixedStart=False, fixedGoal=True,
+               fixedStartCoords=None, fixedGoalCoords=(0, 0),
+               polarStartCoords=False, polarGoalCoords=False,
+               transformRectStart=(0, 0), transformRectGoal=(0, 0),
+               xLower=-1000, xUpper=1000, yLower=-1000, yUpper=1000,
+               radiusLower=450, radiusUpper=550, angleLower=0, angleUpper=2 * math.pi,
+               numDead=0, deadIxs=None,
+               gate=False, gateSize=150,
+               manipulationTask=False, objectType="Ball", objectPos=None, initializeObjectTangent=True, objectDims=[100, 30],
+               visualizer=Visualizer(), recordInfo=True)
+
+obs = env.reset()
+while True:
+    totalSteps, actions = env.wavePolicy()     # hand crafted wave policy
+    for i in range(totalSteps):
+        for _ in range(10):
+            action = actions[i]
+            env.render()
+            obs, reward, done, info = env.step(action)
+    if done:
+        break
+env.close()
 ```
 
 ## [Paper (arXiv)](https://arxiv.org/abs/2203.06464)
@@ -62,18 +84,19 @@ To cite our paper:
 ```
 
 ### Task environment setups  
-![env](https://raw.githubusercontent.com/ai4ce/SNAC/main/docs/figs/environment.PNG?token=ANKETMWZOL7HPJVJHNDX2B3AN4WDE)
+TODO - Need to add 4 gifs of wave policy for each task
 
 ## Comparison 
-**Comparison between other robotic learning tasks with ours.**
-![table](https://raw.githubusercontent.com/ai4ce/SNAC/main/docs/figs/comparison_table.PNG?token=ANKETMXBFQCPNT5CBK5GVKDAN4YP4)
+**There are many reinforcement learning environments out there, but only ours is directly suitable for simulating particle robots.**
+![table](https://raw.githubusercontent.com/ai4ce/DeepParticleRobot/main/docs/figs/related_works.png)
+[20] Jiang, S. 2018; [21] Zheng, L. et al. 2017; [22] Lowe, R. et al. 2020; [23] Baker, B. et al. 2020; [24] Playground 2019; [25] Suarez J. 2019; [26] Samvelyan M. 2019; [27] Google Research Football 2019
 
 ## Results
 **Benchmark results for all four tasks (simple navigation, obstacle navigation, navigation with unresponsive particle robots, and object manipulation). The average, minimum, and maximum displacement is plotted for handcrafted, DQN, A2C, and PPO control.**
 ![Baseline_plots](https://raw.githubusercontent.com/ai4ce/DeepParticleRobot/main/docs/figs/net_displacement_results.png)
 
 **Sample visualized trials of baselines on simple navigation task.**
-![Baseline_visualize](https://raw.githubusercontent.com/ai4ce/SNAC/main/docs/figs/results_fig.PNG?token=ANKETMRREVGARACAVL44QJLAN4WFW)
+TODO - Need to add 4 gifs for each policy on simple navigation
 
 ## Acknowledgment
 This research is supported by the NSF CPS program under CMMI-1932187.
