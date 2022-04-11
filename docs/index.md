@@ -92,6 +92,7 @@ To cite our paper:
 ## Comparison 
 **There are many reinforcement learning environments out there, but only ours is directly suitable for simulating particle robots.**
 ![table](https://raw.githubusercontent.com/ai4ce/DeepParticleRobot/main/docs/figs/related_works.png)
+
 [20] Jiang, S. 2018; [21] Zheng, L. et al. 2017; [22] Lowe, R. et al. 2020; [23] Baker, B. et al. 2020; [24] Playground 2019; [25] Suarez J. 2019; [26] Samvelyan M. 2019; [27] Google Research Football 2019
 
 ## Results
