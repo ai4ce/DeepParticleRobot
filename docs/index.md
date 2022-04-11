@@ -84,6 +84,7 @@ To cite our paper:
 ```
 
 ### Task environment setups  
+
 | Simple Navigation | Obstacle Navigation | Unresponsive Particles | Object Manipulation |
 |---|---|---|---|
 |<img src="https://github.com/ai4ce/DeepParticleRobot/raw/main/docs/figs/sample%20tasks/handcrafted_simple.gif" alt="Simple Navigation" width="256">|<img src="https://github.com/ai4ce/DeepParticleRobot/raw/main/docs/figs/sample%20tasks/handcrafted_obstacle.gif" alt="Obstacle Navigation" width="256">|<img src="https://github.com/ai4ce/DeepParticleRobot/raw/main/docs/figs/sample%20tasks/handcrafted_unresponsive.gif" alt="Unresponsive Particles" width="256">|<img src="https://github.com/ai4ce/DeepParticleRobot/raw/main/docs/figs/sample%20tasks/handcrafted_object.gif" alt="Object Manipulation" width="256">|
