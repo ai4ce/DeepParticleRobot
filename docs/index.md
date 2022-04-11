@@ -108,4 +108,4 @@ To cite our paper:
 ## Acknowledgment
 This research is supported by the NSF CPS program under CMMI-1932187.
 
-<script type="text/javascript" src="//rf.revolvermaps.com/0/0/8.js?i=5au17e4sys6&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=arial&amp;l=33" async="async"></script>
+<script type="text/javascript" src="//rf.revolvermaps.com/0/0/7.js?i=5au17e4sys6&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;sx=0" async="async"></script>
