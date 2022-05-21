@@ -3,22 +3,6 @@ import pymunk
 import pygame
 import math
 
-#Important Constants (and units)
-# BOT_DENSITY = 1     # g/cm^3
-# BOT_RADIUS = 25     # cm
-# BOT_MASS = math.pi * BOT_RADIUS * BOT_RADIUS * BOT_DENSITY  # g
-# BOT_ELASTICITY = 0.1
-# BOT_FRICTION = 100
-#
-# PADDLE_LENGTH = BOT_RADIUS  # cm
-# PADDLE_WIDTH = BOT_RADIUS / 10    # cm
-# PADDLE_MASS = PADDLE_LENGTH * PADDLE_WIDTH * BOT_DENSITY    # g
-#
-# MAX_ACCELERATION = 25    # cm/s^2
-# BOT_MAX_FORCE = PADDLE_LENGTH * PADDLE_WIDTH * PADDLE_MASS * MAX_ACCELERATION * 2  # g*cm/s^2
-# PADDLE_SPEED = 25   # cm/s
-
-# old constants
 BOT_MASS = 10
 BOT_RADIUS = 25
 BOT_ELASTICITY = 0.1
