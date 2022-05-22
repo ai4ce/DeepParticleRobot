@@ -28,7 +28,7 @@ and Object Manipulation (arXiv)".
 ``` 
 ## How to use
 
-Our environment is developed with [OpenAi Gym](https://gym.openai.com/). Here is a sample simple navigation episode with random actions.
+Our environment is developed with [OpenAi Gym](https://gym.openai.com/). Here is a sample simple navigation episode controlled by the handcrafted wave policy.
 ```
 import math
 import gym
