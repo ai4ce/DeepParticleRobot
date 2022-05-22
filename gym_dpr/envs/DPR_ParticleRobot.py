@@ -194,6 +194,7 @@ class CircularBot(ParticleRobot):
         Triggers expand/contract/stop depending on current paddle angle vs desired action angle
         (Will not act if angle and desired angle are within 10 degrees)
         (Will not act if the robot is killed)
+
         :param action: 0 for fully contracted, 1 for fully expanded
         :return: -1 for contraction, 0 for no action, 1 for expansion
         '''

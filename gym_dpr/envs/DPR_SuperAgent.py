@@ -9,12 +9,12 @@ from gym_dpr.envs.DPR_ParticleRobot import CircularBot
 
 
 class SuperCircularBot:
+    '''A collection of particle robots that can be observed and controleld in a centralized manner'''
     def __init__(self, numBots, pos, botType=CircularBot,
                  continuousAction=False, deadIxs=[]):
         dims = math.ceil(math.sqrt(numBots))
 
         def posFunc(centerPos, ix):
-            # BOT_DIAMETER = 60
             BOT_DIAMETER = 2 * DPR_ParticleRobot.BOT_RADIUS + DPR_ParticleRobot.PADDLE_WIDTH + DPR_ParticleRobot.PADDLE_LENGTH
             xc, yc = centerPos
             x = ((ix % dims) - (dims / 2) + 0.5) * BOT_DIAMETER + xc
@@ -37,17 +37,13 @@ class SuperCircularBot:
         '''
         Superagent observes positions and velocities of individual particles
         bot position transformed to goal reference frame
+
         :return: np array containing x y components of position and velocity and angle for each particle
         '''
         xs = []
         ys = []
         vxs = []
         vys = []
-        # angles = []
-
-        # def scale(vl, factor=1000.):
-        #     v = np.array(vl)
-        #     return list(v / factor)
 
         for bot in self.particles:
             x, y, vx, vy = bot.observeSelf()
@@ -57,12 +53,6 @@ class SuperCircularBot:
             ys.append(y)
             vxs.append(vx)
             vys.append(vy)
-            # angles.append(bot.angle)
-        # xs = scale(xs)
-        # ys = scale(ys)
-        # vxs = scale(vxs)
-        # vys = scale(vys)
-        # angles = scale(angles, math.pi / 2)
 
         return np.array(xs + ys + vxs + vys)
 
@@ -70,6 +60,7 @@ class SuperCircularBot:
     def actionAll(self, action):
         '''
         Superagent controls each particle robot - single agent system with multi-binary action space
+
         :param action: self.numBots sized array corresponding to action for each particle (binary)
         :return: list with the returns of each action from CircularBot action
         '''
@@ -80,6 +71,11 @@ class SuperCircularBot:
         return results
 
     def getCOM(self):
+        '''
+        Calculates center of mass of the system of particle robots - assumes every particle robot weighs the same
+
+        :return: vector coordinates of center of mass
+        '''
         xs = []
         ys = []
         for bot in self.particles:
@@ -89,5 +85,10 @@ class SuperCircularBot:
         return pymunk.vec2d.Vec2d(mean(xs), mean(ys))
 
     def updateCOM(self):
+        '''
+        Updates superagent center of mass
+
+        :return:
+        '''
         self.prevCOM = self.currCOM
         self.currCOM = self.getCOM()

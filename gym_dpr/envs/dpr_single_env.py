@@ -14,6 +14,7 @@ from gym_dpr.envs.DPR_World import World
 
 
 class DPRSingleEnv(gym.Env):
+    '''Gym Environment for Centralized Particle Robot Control'''
     metadata = {'render.modes': ['human']}
 
     def __init__(self, numBots, worldClass=World, botClass=CircularBot, superBotClass=SuperCircularBot,

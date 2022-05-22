@@ -24,6 +24,7 @@ OBJECT_FRICTION = 1
 JOINT_MAX_FORCE = 1000
 
 class World:
+    '''Simulation space for particle robots'''
     _dt = 1. / 60
     pymunk_steps_per_frame = 6  # this means action frequency = 1/(_dt*pymunk_steps_per_frame) = 10Hz
 
@@ -319,11 +320,9 @@ class World:
         observations = self.superAgents[0].observeSelf()
 
         # 2. react (simulate magnetic forces)
-        # self.addMagnets()
         self.botReact()
 
         # 3. take actions
-        # action = np.random.randint(2, size=self.superAgents[0].numBots)
         action = self.periodicPolicy(timestep)
         self.superAgents[0].actionAll(action)
 
@@ -332,7 +331,6 @@ class World:
             self.space.step(self._dt)
 
         # 5. clear magnetic forces
-        # self.removeMagnets()
         self.botRemoveMagnets()
 
     def run(self, n_steps):
@@ -342,8 +340,6 @@ class World:
         :param n_steps: total timesteps
         :return:
         '''
-        totalD = 0
-
         assert(n_steps > 0)
         for i in range(n_steps):
             self.frame_id = i

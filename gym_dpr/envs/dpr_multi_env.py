@@ -14,6 +14,7 @@ from gym_dpr.envs.DPR_World import World
 
 
 class DPRMultiEnv(gym.Env):
+    '''Gym Environment for Decentralized Particle Robot Control'''
     metadata = {'render.modes': ['human']}
 
     def __init__(self, numBots, worldClass=World, botClass=CircularBot,
@@ -137,18 +138,41 @@ class DPRMultiEnv(gym.Env):
         super(DPRMultiEnv, self).__init__()
 
     def updateObs(self):
+        '''
+        Updates the coordinates of the center of mass of the entire particle robot system
+
+        :return:
+        '''
         self.prevCOM = self.currCOM
         self.currCOM = self.getParticlesCOM()
 
     def cooperativePositionReward(self):
+        '''
+        Basic reward function - dependent on the center of mass
+
+        :return: inverse of the distance between the Center of Mass(COM) of the particle robot(DPR) system and the goal
+        '''
         return 1. / np.linalg.norm(self.currCOM - self.goal)
 
     def cooperativeVecReward(self):
+        '''
+        goalVec is a vector representing the ideal trajectory (between the COM and the goal)
+        actualVec is a vector representing the trajectory of the COM of the DPR system
+
+        :return: length of the projection of actualVec on goalVec
+        '''
         goalVec = pymunk.vec2d.Vec2d(self.goal[0] - self.prevCOM[0], self.goal[1] - self.prevCOM[1])
         actualVec = self.currCOM - self.prevCOM
         return np.linalg.norm(actualVec) * math.cos(goalVec.get_angle_between(actualVec))
 
     def cooperativePiecewiseVecReward(self):
+        '''
+        same as vecReward() except when the COM is within a threshold distance,
+        then the reward is multiplied by (threshold distance / distance to goal).
+
+        :return: length of the projection of actualVec on goalVec,
+        possibly increased by a factor inversely proportional to the distance between the COM and goal
+        '''
         goalVec = pymunk.vec2d.Vec2d(self.goal[0] - self.prevCOM[0], self.goal[1] - self.prevCOM[1])
         actualVec = self.currCOM - self.prevCOM
         dist = np.linalg.norm(self.goal - self.prevCOM)
@@ -158,18 +182,41 @@ class DPRMultiEnv(gym.Env):
             return np.linalg.norm(actualVec) * math.cos(goalVec.get_angle_between(actualVec))
 
     def updateObjectObs(self):
+        '''
+        Updates the coordinates of the manipulated object
+
+        :return:
+        '''
         self.objectPrevPos = self.objectCurrPos
         self.objectCurrPos = self.manipulatedObject.body.position
 
     def objectPositionReward(self):
+        '''
+        Basic manipulation reward function
+
+        :return: inverse of the distance between the manipulated object and the goal
+        '''
         return 1. / np.linalg.norm(self.manipulatedObject.body.position - self.goal)
 
     def objectVecReward(self):
+        '''
+        goalVec is a vector representing the ideal trajectory (between the object and the goal)
+        actualVec is a vector representing the trajectory of the object
+
+        :return: length of the projection of actualVec on goalVec
+        '''
         goalVec = pymunk.vec2d.Vec2d(self.goal[0] - self.objectPrevPos[0], self.goal[1] - self.objectPrevPos[1])
         actualVec = self.objectCurrPos - self.objectPrevPos
         return np.linalg.norm(actualVec) * math.cos(goalVec.get_angle_between(actualVec))
 
     def objectPiecewiseReward(self):
+        '''
+        same as objectVecReward() except when the object is within a threshold distance,
+        then the reward is multiplied by (threshold distance / distance to goal).
+
+        :return: length of the projection of actualVec on goalVec,
+        possibly increased by a factor inversely proportional to the distance between the object and goal
+        '''
         goalVec = pymunk.vec2d.Vec2d(self.goal[0] - self.objectPrevPos[0], self.goal[1] - self.objectPrevPos[1])
         actualVec = self.objectCurrPos - self.objectPrevPos
         dist = np.linalg.norm(self.manipulatedObject.body.position - self.goal)
@@ -179,6 +226,12 @@ class DPRMultiEnv(gym.Env):
             return np.linalg.norm(actualVec) * math.cos(goalVec.get_angle_between(actualVec))
 
     def getParticleObs(self):
+        '''
+        Get positions and velocities of individual particles
+        bot position transformed to goal reference frame
+
+        :return: np array containing x y components of position and velocity and angle for each particle
+        '''
         xs = []
         ys = []
         vxs = []
@@ -196,6 +249,11 @@ class DPRMultiEnv(gym.Env):
         return np.array([xs, ys, vxs, vys])
 
     def getParticlesCOM(self):
+        '''
+        Calculates center of mass of the system of particle robots - assumes every particle robot weighs the same
+
+        :return: vector coordinates of center of mass
+        '''
         xs = []
         ys = []
         for bot in self.particles:
@@ -205,6 +263,11 @@ class DPRMultiEnv(gym.Env):
         return pymunk.vec2d.Vec2d(mean(xs), mean(ys))
 
     def observations(self):
+        '''
+        Scales and flattens observations of particle robots, and in object manipulation task, appends object observations
+
+        :return: scaled and flattened observations (positions and velocities of every agent)
+        '''
         def scale(vl, factor=1000.):
             v = np.array(vl)
             return list(v / factor)
@@ -216,8 +279,15 @@ class DPRMultiEnv(gym.Env):
         return np.array(obs)
 
     def setupWorld(self, startPos, goalPos, deadIxs):
+        '''
+        Resets particle robot system
+
+        :param startPos: Starting COM of particle robot
+        :param goalPos: Goal coordinates
+        :param deadIxs: Indices of "dead" particle robots
+        :return:
+        '''
         def posFunc(centerPos, ix):
-            # BOT_DIAMETER = 60
             BOT_DIAMETER = 2 * DPR_ParticleRobot.BOT_RADIUS + DPR_ParticleRobot.PADDLE_WIDTH + DPR_ParticleRobot.PADDLE_LENGTH
             xc, yc = centerPos
             x = ((ix % self.dim) - (self.dim / 2) + 0.5) * BOT_DIAMETER + xc
@@ -234,11 +304,25 @@ class DPRMultiEnv(gym.Env):
         self.goal = goalPos
 
     def polar2rect(self, radius, angle):
+        '''
+        Converts polar coordinates to cartesian coordinates
+
+        :param radius: radius/magnitude
+        :param angle: angle
+        :return: Cartesian coordinates
+        '''
         x = radius * math.cos(angle)
         y = radius * math.sin(angle)
         return (x, y)
 
     def initializeObject(self, start, goal):
+        '''
+        Function to initialize target object position. Places the object adjacent to the Particle Robot system
+
+        :param start: Particle Robot COM start position
+        :param goal: Object goal location
+        :return: Object start position
+        '''
         BOT_DIAMETER = 2 * DPR_ParticleRobot.BOT_RADIUS + DPR_ParticleRobot.PADDLE_WIDTH + DPR_ParticleRobot.PADDLE_LENGTH
         radius = (self.dim / 2) * BOT_DIAMETER + (self.objectDims[1] / 2)
         dx, dy = goal[0] - start[0], goal[1] - start[1]
@@ -257,6 +341,18 @@ class DPRMultiEnv(gym.Env):
               deadIxs=None,
               objectType=None, objectPos=None, objectDims=None,
               gate=False):
+        '''
+        Resets and initializes world
+
+        :param startPos: start position
+        :param goalPos: goal position
+        :param deadIxs: indices of "dead" particle robots
+        :param objectType: target object type (ball/box)
+        :param objectPos: target object start position
+        :param objectDims: List containing [object size, object mass]
+        :param gate: initialize gate?
+        :return: Inital world observation
+        '''
         self.world.removeAll()
 
         if startPos == None:
@@ -344,10 +440,30 @@ class DPRMultiEnv(gym.Env):
         return self.observations()
 
     def render(self, mode='human'):
+        '''
+        Uses Pygame for visualization
+
+        :param mode: Just human for now
+        :return:
+        '''
         if self.visualizer != None:
             self.visualizer.viz(timestep=self.steps, world=self.world)
 
     def step(self, actions_list):
+        '''
+        Simulates one step of the environment
+        1. gets observations
+        2. simulates magnetic attraction
+        3. takes actions
+        4. run timesteps in pymunk
+        5. reset magnets
+        6. calculate reward
+        7. determine state of environment
+        8. record information
+
+        :param actions_list: list of actions for each particle robot
+        :return: world observations, scalar reward, environment state, information
+        '''
         self.steps += 1
 
         # 1. observations
