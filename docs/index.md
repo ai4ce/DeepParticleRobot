@@ -1,5 +1,5 @@
 # A Deep Reinforcement Learning Environment for Particle Robot Navigation and Object Manipulation
-
+### ICRA'22 Outstanding Coordination Paper finalist
 [**Jeremy Shen**](https://github.com/jshen04), [**Erdong Xiao**](https://github.com/ErdongXiao), [**Yuchen Liu**](https://github.com/Rtlyc), [**Chen Feng**](https://engineering.nyu.edu/faculty/chen-feng)
 
 ![Overview](https://raw.githubusercontent.com/ai4ce/DeepParticleRobot/main/docs/figs/environment_overview.jpg)
@@ -11,20 +11,20 @@ Particle robots are novel biologically-inspired robotic systems where locomotion
 
 ## [Code (GitHub)](https://github.com/ai4ce/DeepParticleRobot)
 ```
-The code is copyrighted by the authors. Permission to copy and use 
+ The code is copyrighted by the authors. Permission to copy and use 
  this software for noncommercial use is hereby granted provided: (a)
  this notice is retained in all copies, (2) the publication describing
  the method (indicated below) is clearly cited, and (3) the
  distribution from which the code was obtained is clearly cited. For
  all other uses, please contact the authors.
- 
+
  The software code is provided "as is" with ABSOLUTELY NO WARRANTY
  expressed or implied. Use at your own risk.
-This code provides an implementation of the method described in the
-following publication: 
-Jeremy Shen, Erdong Xiao, Yuchen Liu, and Chen Feng,    
-"A Deep Reinforcement Learning Environment for Particle Robot Navigation 
-and Object Manipulation (arXiv)". 
+ This code provides an implementation of the method described in the
+ following publication: 
+ Jeremy Shen, Erdong Xiao, Yuchen Liu, and Chen Feng,    
+ "A Deep Reinforcement Learning Environment for Particle Robot Navigation 
+ and Object Manipulation (arXiv)". 
 ``` 
 ## How to use
 
