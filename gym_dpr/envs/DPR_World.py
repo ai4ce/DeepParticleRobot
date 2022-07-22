@@ -24,11 +24,13 @@ OBJECT_FRICTION = 1
 JOINT_MAX_FORCE = 1000
 
 class World:
-    '''Simulation space for particle robots'''
     _dt = 1. / 60
     pymunk_steps_per_frame = 6  # this means action frequency = 1/(_dt*pymunk_steps_per_frame) = 10Hz
 
-    def __init__(self, visualizer=None):
+    def __init__(self, start=(300, 300), goal=(0, 0), visualizer=None):
+        self.start = start
+        self.goal = goal
+
         self.space = pymunk.Space()
         self.superAgents = []
         self.particles = []
@@ -41,6 +43,10 @@ class World:
 
         self.staticObjects = []
         pymunk.pygame_util.positive_y_is_up = True
+
+        self.inContact = []
+        self.edge_index = [[], []]
+        self.node_features = []
 
     def addParticleRobot(self, bot: ParticleRobot):
         '''
@@ -56,10 +62,10 @@ class World:
         for paddle in bot.paddles['paddle2']:
             self.space.add(paddle, paddle.body)
 
-        self.space.add(bot.motors['bot1'])
-        self.space.add(bot.motors['12'])
-        self.space.add(bot.joints['bot1'])
-        self.space.add(bot.joints['12'])
+        self.space.add(*bot.motors['bot1'])
+        self.space.add(*bot.motors['12'])
+        self.space.add(*bot.joints['bot1'][0], *bot.joints['bot1'][1])
+        self.space.add(*bot.joints['12'][0], *bot.joints['12'][1])
         self.particles.append(bot)
 
         def preSolveFalse(arbiter, space, data):
@@ -136,12 +142,13 @@ class World:
         :return:
         '''
         botPairs = self.generatePairs()
+        self.inContact = botPairs
         joints = []
         for pair in botPairs:
             mag = self.generateJoints(pair[0], pair[1])
             if mag != None:
                 joints.append(mag)
-        self.space.add(joints)
+        self.space.add(*joints)
         self.magneticForces = joints
 
     def removeMagnets(self):
@@ -150,7 +157,7 @@ class World:
 
         :return:
         '''
-        self.space.remove(self.magneticForces)
+        self.space.remove(*self.magneticForces)
         self.magneticForces = []
 
     def botReact(self):
@@ -161,8 +168,7 @@ class World:
         '''
         for bot in self.particles:
             magnets = bot.createAllMagnets(self.particles)
-            if len(magnets) > 0:
-                self.space.add(magnets)
+            self.space.add(*magnets)
 
     def botRemoveMagnets(self):
         '''
@@ -171,7 +177,7 @@ class World:
         :return:
         '''
         for bot in self.particles:
-            self.space.remove(bot.magnets)
+            self.space.remove(*bot.magnets)
             bot.magnets = []
 
     def addBall(self, pos, mass, radius):
@@ -277,9 +283,9 @@ class World:
 
         :return:
         '''
-        self.space.remove(self.space.bodies)
-        self.space.remove(self.space.shapes)
-        self.space.remove(self.space.constraints)
+        self.space.remove(*self.space.bodies)
+        self.space.remove(*self.space.shapes)
+        self.space.remove(*self.space.constraints)
 
         self.superAgents = []
         self.particles = []
@@ -289,23 +295,51 @@ class World:
         self.object = None
         self.gates = []
 
-    def periodicPolicy(self, timestep):
-        '''
-        Hand-crafted control algorithm. Uses location of the particle robot to determine expansion-contraction cycle.
-        The closer to the goal, the earlier the particle robot will expand.
+        self.inContact = []
 
-        :param timestep: current timestep
-        :return:
+    def wavePolicy(self):
         '''
-        actions = []
-        for i in range(self.superAgents[0].numBots):
-            if i % math.ceil(math.sqrt(self.superAgents[0].numBots)) == timestep % math.ceil(math.sqrt(self.superAgents[0].numBots)):
-                actions.append(1)
-            else:
-                actions.append(0)
-        return actions
+        Hand-crafted baseline algorithm. Particle robots recieve an index based to distance to the goal
+        (closer distance, earlier index), and the index determines the particle robot's location in the
+        expansion cycle.
 
-    def step(self, timestep):
+        :return: Array of sequential actions
+        '''
+        BOT_DIAMETER = 60
+        cycleIx = []
+        dists = []
+
+        def lineThrough2Points(p, q):
+            a = p[1] - q[1]
+            b = q[0] - p[0]
+            c = p[1] * q[0] - p[0] * q[1]
+            return (a, b, -c)
+
+        def distPoint2Line(p, line):
+            if line[0] == 0 and line[1] == 0:
+                return np.linalg.norm(p)
+            return abs((line[0] * p[0] + line[1] * p[1] + line[2])) / (math.sqrt(line[0] * line[0] + line[1] * line[1]))
+
+        cx, cy = self.superAgents[0].getCOM()
+        gx, gy = self.goal
+        px = (((gy - cy) ** 2) / (gx - cx)) + gx
+        py = cy
+        p2 = pymunk.vec2d.Vec2d(px, py)
+        perpLine = lineThrough2Points(self.goal, p2)
+        for bot in self.superAgents[0].particles:
+            dists.append(distPoint2Line(bot.body.position, perpLine))
+
+        lower = min(dists)
+        for dist in dists:
+            ix = ((dist - lower) // (BOT_DIAMETER)) + 1
+            cycleIx.append(int(ix))
+        lastAction = max(cycleIx)
+        actionArray = np.zeros((lastAction, self.superAgents[0].numBots))
+        for botIx, ix in enumerate(cycleIx):
+            actionArray[ix - 1][botIx] = 1
+        return lastAction, actionArray
+
+    def step(self, action):
         '''
         1. Gets observations
         2. Simulates magnets
@@ -317,13 +351,14 @@ class World:
         :return:
         '''
         # 1. Superagent observation
-        observations = self.superAgents[0].observeSelf()
+        observations = self.superAgents[0].observeSelf(self.goal)
 
         # 2. react (simulate magnetic forces)
+        # self.addMagnets()
         self.botReact()
 
         # 3. take actions
-        action = self.periodicPolicy(timestep)
+        # action = np.random.randint(2, size=self.superAgents[0].numBots)
         self.superAgents[0].actionAll(action)
 
         # 4. simulate
@@ -331,7 +366,21 @@ class World:
             self.space.step(self._dt)
 
         # 5. clear magnetic forces
+        # self.removeMagnets()
         self.botRemoveMagnets()
+
+        self.edge_index = [[], []]
+        for pair in self.generatePairs():
+            if np.linalg.norm(pair[0].body.position - self.goal) < np.linalg.norm(pair[1].body.position - self.goal):
+                self.edge_index[0].append(pair[0].botId)
+                self.edge_index[1].append(pair[1].botId)
+            else:
+                self.edge_index[0].append(pair[1].botId)
+                self.edge_index[1].append(pair[0].botId)
+
+        self.node_features = []
+        for particle in self.particles:
+            self.node_features.append([particle.targetAngle / (math.pi/2)])
 
     def run(self, n_steps):
         '''
@@ -340,6 +389,8 @@ class World:
         :param n_steps: total timesteps
         :return:
         '''
+        totalD = 0
+
         assert(n_steps > 0)
         for i in range(n_steps):
             self.frame_id = i
